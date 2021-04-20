@@ -1,0 +1,31 @@
+component my_resistor
+% constant power load
+% The voltage-current (V-I) relationship for a constant power load is P = V * I,
+% where P is the constant power in W.
+%
+% The positive and negative terminals of the resistor are denoted by the
+% + and - signs respectively.
+ nodes
+ p = foundation.electrical.electrical; % +:left
+ n = foundation.electrical.electrical; % -:right
+ end
+ 
+ variables
+ i = { 0, 'A' }; % Current
+ v = { 0, 'V' }; % Voltage
+ end
+ 
+ parameters
+ Io = { 1, 'A' }; % related current
+ end
+ 
+ branches
+ i : p.i -> n.i;
+ end
+ 
+ equations
+ v == p.v - n.v;
+ i == Io;
+ end
+ 
+end

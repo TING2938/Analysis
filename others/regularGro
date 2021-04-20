@@ -1,0 +1,17 @@
+#!/share/data1/yting/install/mathematica11.3/Executables/wolframscript
+path = $ScriptCommandLine[[2]];
+oldFile=OpenRead@path;
+newFileName=StringSplit[path,{"."}][[-2]]<>"_FromMma.gro";
+newFile=OpenWrite@newFileName;
+strPad[str_,n_]:=If[n>0,StringPadLeft[str,n],StringPadRight[str,-n]];
+While[True,
+	lines=ReadLine@oldFile;
+	If[lines==EndOfFile,Break[]];
+	line=StringSplit@lines;
+	If[Length@line ==1 || Length@line ==3,WriteLine[newFile,lines],
+		l1=StringCases[First@line,DigitCharacter..,1][[1]];
+		l2=StringCases[First@line,LetterCharacter~~___][[1]];
+		WriteString[newFile,strPad[l1,5],strPad[l2,-5],strPad[line[[2]],5],strPad[line[[3]],5],strPad[line[[4]],8],strPad[line[[5]],8],strPad[line[[6]],8],"\n"]
+	]
+]
+Close[#]&/@{oldFile,newFile};

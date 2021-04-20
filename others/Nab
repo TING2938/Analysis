@@ -1,0 +1,21 @@
+#!/share/data1/yting/install/mathematica11.3/Executables/wolframscript
+fileName = $ScriptCommandLine[[2]];
+{dens, r1, r2} = ToExpression /@ $ScriptCommandLine[[3 ;; 5]];
+data = Cases[Import[fileName, "Table"], x_List/;VectorQ[x, NumberQ]];
+func = Interpolation[data, Method->"Spline"];
+Rmin = x /. FindMinimum[func@x, {x, r1, r2}][[2]];
+ROne = x /. FindRoot[func@x - 1, {x, r1, r2}];
+Print["Rmin  = ", Rmin]
+Print["ROne  = ", ROne]
+Nab[x_] := 4 Pi dens NIntegrate[ func[rr] rr^2, {rr, 0, x}, Method -> "AdaptiveQuasiMonteCarlo", MaxPoints -> 100]//Quiet;
+NRmin = 4 Pi dens Integrate[ func[rr] rr^2, {rr, 0, Rmin}]//N//Quiet
+NROne = 4 Pi dens Integrate[ func[rr] rr^2, {rr, 0, ROne}]//N//Quiet
+Print["NRmin = ", NRmin]
+Print["NROne = ", NROne]
+newFileName = "Nr_" <> fileName;
+newFile = OpenWrite@newFileName;
+WriteString[newFile, "# Rmin = ", Rmin, ", NRmin = ", NRmin, "\n"];
+WriteString[newFile, "# ROne = ", ROne, ", NROne = ", NROne, "\n"];
+rMax = data[[-1, 1]];
+Table[WriteString[newFile ,i , "    ", Nab@i, "\n"] ,{i, 0, rMax, 0.01}];
+Close@newFile;

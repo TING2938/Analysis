@@ -1,0 +1,47 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: build gromacs-2018.3
+      run: |
+        mkdir gromacs_build
+        cd gromacs_build
+        wget http://ftp.gromacs.org/pub/gromacs/gromacs-2018.3.tar.gz
+        tar -zxvf gromacs-2018.3.tar.gz
+        cd gromacs-2018.3
+        mkdir build
+        cd build
+        cmake .. -DGMX_BUILD_OWN_FFTW=ON
+        make
+        sudo make install
+        source /usr/local/gromacs/bin/GMXRC
+      
+    - name: init
+      run: chmod +x ./configure 
+      working-directory: gmxProject/Analysis  
+        
+    - name: configure Core
+      run: |
+        ./configure Core/src/test/tst3.cpp
+        build/Core/src/test/tst3
+      working-directory: gmxProject/Analysis  
+    
+    - name: configure Gmx1802
+      run: |
+        ./configure Gmx1802/src/general/calc_energy.cpp
+        build/Gmx1802/src/general/calc_energy -h
+      working-directory: gmxProject/Analysis
+      
+      
+      

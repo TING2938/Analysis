@@ -1,0 +1,7 @@
+#!/usr/bin/env python.exe
+from itp.xvgData import xvgPlot
+import sys
+
+fileName = sys.argv[1]
+
+xvgPlot(fileName)

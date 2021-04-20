@@ -1,0 +1,16 @@
+#!/share/data1/yting/install/mathematica11.3/Executables/wolframscript
+file = $ScriptCommandLine[[2]];
+allData = Import[file, "Table"];
+title = Cases[allData, {"@", "title", _}][[1, 3]];
+xaxis = Cases[allData, {"@", "xaxis", "label", _}][[1, 4]];
+yaxis = Cases[allData, {"@", "yaxis", "label", _}][[1, 4]];
+data = Cases[allData, x_List /; VectorQ[x, NumberQ]][[All, 1 ;; 2]];
+image = ListLinePlot[data, PlotStyle -> Red, Frame -> True, 
+   FrameStyle -> Directive[Black], Axes -> False, 
+   FrameLabel -> {{yaxis, title}, {xaxis, 
+   Style[StringSplit[file, {"\\", "."}][[-2]], 20]}}, 
+   LabelStyle -> {FontFamily -> "Arial", 16, Black, Bold}, 
+   PlotRange -> Full, ImageSize -> Large];
+pngName=StringSplit[file,{"."}][[-2]] <> ".png";
+Export[pngName, image];
+RunProcess[{"display", pngName}]
